@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 40" width="64" height="40" role="img" aria-label="BenchBase">
+  <title>BenchBase</title>
+  <!-- A bench. The seat is four answer options, one in each Notion colour; one is lifted out: the answer chosen.
+       The line beneath is the base every model is measured on. -->
+  <g>
+    <g opacity="0.66">
+      <rect x="1" y="12" width="14" height="9" rx="2.5" fill="#D9730D"/>
+      <rect x="33" y="12" width="14" height="9" rx="2.5" fill="#448361"/>
+      <rect x="49" y="12" width="14" height="9" rx="2.5" fill="#9065B0"/>
+    </g>
+    <rect x="17" y="6" width="14" height="9" rx="2.5" fill="#337EA9"/>
+    <g fill="#37352F">
+      <rect x="5" y="21" width="5" height="15.5" rx="1.5"/>
+      <rect x="54" y="21" width="5" height="15.5" rx="1.5"/>
+      <rect x="0" y="36.5" width="64" height="2.5" rx="1.25"/>
+    </g>
+  </g>
+</svg>

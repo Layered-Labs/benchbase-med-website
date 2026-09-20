@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BenchBase: test AI models on medical exam questions</title>
+<meta name="description" content="BenchBase runs AI models on medical multiple-choice benchmarks, marks every answer the same way, and gives you tables, charts and a file of every response.">
+<meta property="og:title" content="BenchBase: test AI models on medical exam questions">
+<meta property="og:description" content="Run a model on medical exam questions with one command. Compare several models and see whether the difference between them is real.">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="home.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="index.html" aria-label="BenchBase home"><span>benchbase</span></a>
+    <nav aria-label="Primary">
+      <a href="guide.html">Documentation</a>
+      <a href="#benchmarks">Benchmarks</a>
+      <a class="pill" href="https://huggingface.co/Layered-Labs">Datasets <span aria-hidden="true">↗</span></a>
+      <a class="pill dark" href="https://github.com/Layered-Labs/benchbase-med">GitHub <span aria-hidden="true">↗</span></a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero">
+  <div class="hero-copy">
+    <p class="kicker">Open source, made by Layered Labs</p>
+    <h1 class="display">Test AI models<br>on medical exam questions.</h1>
+    <p class="lede">BenchBase asks a model the same multiple-choice questions from medical benchmarks such as MedQA, MedMCQA and PubMedQA, marks every answer, and gives you tables, charts and a file of every response. Run several models and it tells you whether the difference between them is real.</p>
+    <div class="actions">
+      <a class="btn" href="guide.html">Read the documentation</a>
+      <a class="btn btn-ghost" href="#compare">See a comparison <span aria-hidden="true">↓</span></a>
+    </div>
+    <div class="code install" data-lang="shell"><pre><code><span class="cmd">git clone https://github.com/Layered-Labs/benchbase-med</span>
+<span class="cmd">cd benchbase-med &amp;&amp; pip install -e .</span>
+
+<span class="k">export</span> <span class="v">OPENROUTER_API_KEY</span>=<span class="s">sk-or-v1-...</span>
+<span class="cmd">benchbase run</span> <span class="f">--model</span> <span class="s">"~openai/gpt-astra-latest"</span></code></pre></div>
+    <p class="small muted hero-foot">Needs Python 3.10 or newer and an OpenRouter key. MIT license.</p>
+  </div>
+</section>
+
+<section class="hero-specimen">
+  <div class="hero-art">
+    <figure class="specimen">
+      <figcaption class="specimen-tag">
+        <span>report.md</span>
+        <span class="muted">Real results, 10 questions per benchmark</span>
+      </figcaption>
+      <div class="specimen-body">
+        <div class="stat-lead">
+          <span class="stat-label">Accuracy, all 40 questions</span>
+          <span class="stat-value num">95.0<span class="stat-unit">%</span></span>
+          <span class="stat-sub mono num">95% interval: 83.5 to 98.6</span>
+        </div>
+        <p class="small muted specimen-model mono">deepseek/deepseek-v4-flash</p>
+        <table class="mini">
+          <thead><tr><th>Benchmark</th><th class="num">Accuracy</th><th class="num">Random guess</th></tr></thead>
+          <tbody>
+            <tr><td>MedQA</td><td class="num">100</td><td class="num">25.0</td></tr>
+            <tr><td>MMLU Medical</td><td class="num">100</td><td class="num">25.0</td></tr>
+            <tr><td>PubMedQA</td><td class="num">90</td><td class="num">33.3</td></tr>
+            <tr><td>MedMCQA</td><td class="num">90</td><td class="num">25.0</td></tr>
+          </tbody>
+        </table>
+        <p class="small muted specimen-foot">Both columns are percentages. "Random guess" is the score you would get by guessing.</p>
+      </div>
+    </figure>
+  </div>
+</section>
+
+<section class="band" id="contract">
+  <div class="section-head">
+    <h2 class="display">Every benchmark, one format.</h2>
+    <p class="section-lede">Medical benchmarks come in different formats, and a score changes with the prompt and with how the answer is read. BenchBase converts every benchmark to one format, gives every model the same prompt, and accepts only one kind of reply.</p>
+  </div>
+
+  <div class="diagram" role="img" aria-label="Four benchmarks are converted into one BenchmarkItem format, asked with one prompt, and written to a report, a CSV, a JSONL file and figures.">
+    <div class="flow">
+      <div class="flow-col">
+        <p class="flow-label">Sources</p>
+        <ul class="flow-list mono">
+          <li>MedQA</li><li>MedMCQA</li><li>PubMedQA</li><li>MMLU Medical</li>
+        </ul>
+      </div>
+      <div class="flow-line" aria-hidden="true"></div>
+      <div class="flow-col">
+        <p class="flow-label">Format</p>
+        <p class="flow-node mono blue">BenchmarkItem</p>
+        <p class="flow-note small">question, options, answer, context, split</p>
+      </div>
+      <div class="flow-line" aria-hidden="true"></div>
+      <div class="flow-col">
+        <p class="flow-label">Prompt</p>
+        <p class="flow-node mono orange">mcq-zeroshot-v2</p>
+        <p class="flow-note small">no examples; the model replies with only the option key</p>
+      </div>
+      <div class="flow-line" aria-hidden="true"></div>
+      <div class="flow-col">
+        <p class="flow-label">Files</p>
+        <ul class="flow-list mono">
+          <li>report.md</li><li>responses.jsonl</li><li>results.csv</li><li>figures/</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <h3>Bad questions are rejected</h3>
+      <p class="muted">A question is rejected and logged if it has an empty option, duplicate option keys, an answer that matches no option, or fewer than two options. Rejected questions are never scored.</p>
+    </div>
+    <div>
+      <h3>One prompt, one kind of reply</h3>
+      <p class="muted">Every model gets the same prompt and must reply with only the key of an option, such as B. Anything else counts as no answer and is scored wrong. Each result stores the prompt version, a label people change by hand when the prompt changes.</p>
+    </div>
+    <div>
+      <h3>Runs can be resumed</h3>
+      <p class="muted">Each answer is saved as soon as it comes back. If a run stops, run the same command again to continue. BenchBase refuses to continue into results from a different model or prompt version.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="compare">
+  <div class="section-head">
+    <h2 class="display">See whether one model really beats another.</h2>
+    <p class="section-lede">Two accuracy numbers are not enough to say one model is better, because both models face the same hard questions. BenchBase compares two models only on the questions where they gave different answers (McNemar's test), and corrects for comparing every pair of models (Holm correction).</p>
+  </div>
+
+  <div class="table">
+    <table>
+      <thead><tr><th>Model A</th><th>Model B</th><th>Difference, points (95% CI)</th><th class="num">A only</th><th class="num">B only</th><th>p (Holm)</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">deepseek-v4-flash</td><td class="mono">llama-3.1-8b-instruct</td><td class="num">+5.0 (-5.0 to +15.0)</td><td class="num">3</td><td class="num">1</td><td class="num">0.625</td></tr>
+        <tr><td class="mono">deepseek-v4-flash</td><td class="mono">mistral-nemo</td><td class="num">+15.0 (+5.0 to +27.5)</td><td class="num">6</td><td class="num">0</td><td class="num">0.094</td></tr>
+        <tr><td class="mono">llama-3.1-8b-instruct</td><td class="mono">mistral-nemo</td><td class="num">+10.0 (-2.5 to +22.5)</td><td class="num">5</td><td class="num">1</td><td class="num">0.438</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="small muted">Exact McNemar test on the 40 questions that all three models answered. "A only" is the number of questions A got right and B got wrong. Only these questions can tell two models apart.</p>
+
+  <figure class="half">
+    <img src="assets/pairwise.png" alt="Heatmap of pairwise accuracy differences between three models with significance stars" width="1020" loading="lazy">
+    <figcaption>The accuracy difference for each pair, starred where the corrected p-value is below 0.05. The last pair shows no significant difference.</figcaption>
+  </figure>
+
+  <div class="note">
+    <span class="note-label">Read this first</span>
+    <p>Finding no difference does not mean two models are equal. With few questions, the test cannot tell. These numbers come from 10 questions per benchmark, which is a quick check and not a result.</p>
+  </div>
+</section>
+
+<section class="band" id="receipts">
+  <div class="section-head">
+    <h2 class="display">Every answer is saved.</h2>
+    <p class="section-lede">Each line of <code>responses.jsonl</code> is one question. It holds the model, the prompt version, the question and its options, the model's exact reply, whether it was right, and the tokens and cost when the provider reports them. The example is shortened.</p>
+  </div>
+
+  <div class="receipt">
+    <div class="code receipt-code" data-lang="json"><pre><code>{
+  <span class="v">"model"</span>: <span class="s">&quot;deepseek/deepseek-v4-flash&quot;</span>,
+  <span class="v">"prompt_version"</span>: <span class="s">&quot;mcq-zeroshot-v2&quot;</span>,
+  <span class="v">"dataset_key"</span>: <span class="s">&quot;pubmedqa&quot;</span>,
+  <span class="v">"split"</span>: <span class="s">&quot;train&quot;</span>,
+  <span class="v">"hash"</span>: <span class="s">&quot;2d7b79c2cd1f…&quot;</span>,
+  <span class="v">"question"</span>: <span class="s">&quot;Does ethnicity affect where people with canc…&quot;</span>,
+  <span class="v">"options"</span>: [{<span class="v">"original_key"</span>: <span class="s">&quot;A&quot;</span>, <span class="v">"text"</span>: <span class="s">&quot;Yes&quot;</span>}, {<span class="v">"original_key"</span>: <span class="s">&quot;B&quot;</span>, <span class="v">"text"</span>: <span class="s">&quot;No&quot;</span>}, {<span class="v">"original_key"</span>: <span class="s">&quot;C&quot;</span>, <span class="v">"text"</span>: <span class="s">&quot;Maybe&quot;</span>}],
+  <span class="v">"gold"</span>: <span class="s">&quot;A&quot;</span>,
+  <span class="v">"pred"</span>: <span class="s">&quot;A&quot;</span>,
+  <span class="v">"correct"</span>: <span class="k">true</span>,
+  <span class="v">"raw_output"</span>: <span class="s">&quot;A&quot;</span>,
+  <span class="v">"finish_reason"</span>: <span class="s">&quot;stop&quot;</span>,
+  <span class="v">"latency_ms"</span>: <span class="f">3246.7</span>,
+  <span class="v">"prompt_tokens"</span>: <span class="f">593</span>,
+  <span class="v">"completion_tokens"</span>: <span class="f">154</span>,
+  <span class="v">"cost"</span>: <span class="f">0.00014285</span>
+}</code></pre></div>
+
+    <ul class="annotations">
+      <li><span class="mono">prompt_version</span>The prompt version that produced this answer.</li>
+      <li><span class="mono">split</span>The part of the source dataset the question came from: train, validation or test. Filter on it to get a test-only number.</li>
+      <li><span class="mono">raw_output</span>The model's exact reply, unedited.</li>
+      <li><span class="mono">pred</span>The option key the model gave. It has to be exactly one of the question's keys, or the answer is scored wrong.</li>
+      <li><span class="mono">cost</span>Tokens, time and dollar cost for this question, when the provider reports them. OpenRouter does. A service of your own may not.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="band" id="benchmarks">
+  <div class="section-head">
+    <h2 class="display">Benchmarks</h2>
+    <p class="section-lede">BenchBase converts and scores every split of each source dataset, and each result records its split. Converted datasets are on Hugging Face under <a href="https://huggingface.co/Layered-Labs">Layered-Labs</a>. The item counts are what the current code produces. The MedQA and MedMCQA copies on Hugging Face were uploaded earlier with older code and have not been checked against these counts.</p>
+  </div>
+  <div class="table">
+    <table>
+      <thead><tr><th>Benchmark</th><th class="num">Items converted</th><th class="text">Splits</th><th class="text">Notes</th></tr></thead>
+      <tbody>
+        <tr><td><a href="https://huggingface.co/datasets/Layered-Labs/benchbase-medqa">MedQA</a></td><td class="num">11,451</td><td class="text">train, test</td><td class="text">USMLE-style, 4 options</td></tr>
+        <tr><td><a href="https://huggingface.co/datasets/Layered-Labs/benchbase-medmcqa">MedMCQA</a></td><td class="num">187,005</td><td class="text">train, validation</td><td class="text">Indian medical entrance exams. The source's test split has no public answers, so it is skipped</td></tr>
+        <tr><td><a href="https://huggingface.co/datasets/Layered-Labs/benchbase-pubmedqa">PubMedQA</a></td><td class="num">1,000</td><td class="text">train</td><td class="text">Yes, No or Maybe, shown as options A, B and C. The abstract is included as context</td></tr>
+        <tr><td><a href="https://huggingface.co/datasets/Layered-Labs/benchbase-mmlu-medical">MMLU Medical</a></td><td class="num">1,242</td><td class="text">test, validation, dev</td><td class="text">Anatomy, clinical knowledge, college medicine, medical genetics, professional medicine and college biology</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="band" id="run">
+  <div class="section-head">
+    <h2 class="display">Run a model.</h2>
+    <p class="section-lede">Set your key, name a model, and BenchBase writes the report.</p>
+  </div>
+  <div class="run-grid">
+    <ol class="steps">
+      <li><span class="step-label tag blue">1. Set your key</span><div class="code" data-lang="shell"><pre><code><span class="k">export</span> <span class="v">OPENROUTER_API_KEY</span>=<span class="s">sk-or-v1-...</span></code></pre></div></li>
+      <li><span class="step-label tag green">2. Run one model</span><div class="code" data-lang="shell"><pre><code><span class="cmd">benchbase run</span> <span class="f">--model</span> <span class="s">"deepseek/deepseek-v4-flash"</span></code></pre></div></li>
+      <li><span class="step-label tag purple">3. Run several and compare</span><div class="code" data-lang="shell"><pre><code><span class="cmd">benchbase run</span> <span class="f">--model</span> <span class="s">"deepseek/deepseek-v4-flash,meta-llama/llama-3.1-8b-instruct"</span></code></pre></div></li>
+    </ol>
+    <div class="run-side">
+      <p>By default BenchBase runs every question in every benchmark. MedMCQA alone has 187,005 questions. To run a random sample instead, add <code>--limit</code>, for example <code>--limit 100</code> for 100 questions per benchmark. Models in one run get the same questions. Separate runs match only if you use the same seed, limit and source.</p>
+      <p><a href="guide.html">Full documentation, command reference and limits <span aria-hidden="true">→</span></a></p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div>
+    <span class="foot-note">Open source, made by Layered Labs.</span>
+    <a href="guide.html">Documentation</a>
+    <a href="https://github.com/Layered-Labs/benchbase-med">GitHub</a>
+    <a href="https://huggingface.co/Layered-Labs">Hugging Face</a>
+    <a href="mailto:abdullah.ridwan@layeredlabs.ai">Contact</a>
+    <span>MIT license</span>
+  </div>
+</footer>
+
+<script src="script.js" defer></script>
+</body>
+</html>

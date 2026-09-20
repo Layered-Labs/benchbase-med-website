@@ -1,0 +1,73 @@
+/* BenchBase documentation page. A centered title block, then a plain reading column with contents in the margin. */
+
+.docs-page .guide-intro {
+  max-width: 50rem; margin: 0 auto; text-align: center;
+  padding: clamp(3rem, 7vw, 5rem) var(--gutter) clamp(1.6rem, 3vw, 2.6rem);
+}
+.docs-page .guide-kicker { font: 400 0.9rem / 1.4 var(--sans); color: var(--ink-2); margin: 0 0 1.3rem; }
+.docs-page h1 { font-family: var(--sans); font-weight: 500; font-size: var(--step-4); line-height: 1.06; letter-spacing: -0.03em; margin: 0 0 1.2rem; }
+.docs-page .guide-lede { font-size: var(--step-1); line-height: 1.5; color: var(--ink-2); max-width: 36rem; margin: 0 auto 1.1rem; }
+.docs-page .guide-intro-note { font: 400 0.85rem / 1.5 var(--sans); color: var(--ink-3); margin: 0; }
+.docs-page .guide-intro-note span { color: var(--rule-2); }
+
+.guide-shell {
+  max-width: var(--page); margin: 0 auto; padding: 0 var(--gutter) 3rem;
+  display: grid; grid-template-columns: 13rem minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+}
+.toc { position: sticky; top: 5rem; align-self: start; padding-top: 1.4rem; font-size: 0.9rem; }
+.toc p { font: 500 0.8rem/1 var(--sans); color: var(--ink-3); margin: 0 0 0.85rem; }
+.toc ol { list-style: none; margin: 0; padding: 0; }
+.toc a {
+  display: block; padding: 0.32rem 0 0.32rem 0.8rem; color: var(--ink-2); text-decoration: none;
+  border-left: 2px solid var(--rule); transition: color 140ms, border-color 140ms;
+}
+.toc a:hover { color: var(--ink); }
+.toc a[aria-current="true"] { color: var(--ink); border-left-color: var(--blue); font-weight: 500; }
+
+.guide-content { min-width: 0; max-width: 47rem; }
+.guide-content section { padding-top: clamp(2.4rem, 5vw, 3.6rem); }
+.guide-content section:first-child { padding-top: 1.4rem; }
+.guide-content section + section { margin-top: 0; }
+.guide-content h2 { font-size: var(--step-2); margin: 0 0 0.9rem; }
+.guide-content h3 { font-size: 1.08rem; margin: 1.9rem 0 0.45rem; }
+.guide-content > section > p:first-of-type { font-size: var(--step-1); line-height: 1.5; color: var(--ink-2); }
+
+/* numbered steps */
+.steps { list-style: none; padding: 0; counter-reset: step; margin: 1.4rem 0 1.2rem; }
+.steps > li { counter-increment: step; position: relative; padding-left: 2.9rem; margin-bottom: 1.5rem; }
+.steps > li::before {
+  content: counter(step); position: absolute; left: 0; top: 0.05rem;
+  font: 500 0.85rem/1 var(--sans); color: var(--ink);
+  width: 1.85rem; height: 1.85rem; display: grid; place-items: center;
+  background: var(--c-bg, var(--paper-2)); color: var(--c-fg, var(--ink)); border-radius: 50%;
+}
+.steps > li:nth-child(1) { --c-bg: var(--blue-bg); --c-fg: var(--blue-fg); }
+.steps > li:nth-child(2) { --c-bg: var(--green-bg); --c-fg: var(--green-fg); }
+.steps > li:nth-child(3) { --c-bg: var(--orange-bg); --c-fg: var(--orange-fg); }
+.steps h3 { margin: 0 0 0.45rem; font-size: 1.02rem; }
+.steps .code { margin-bottom: 0.7rem; }
+
+.tree { font: 400 0.82rem/1.8 var(--mono); background: var(--paper-2); border-radius: 14px; padding: 1.05rem 1.2rem; overflow-x: auto; margin: 0 0 1.2rem; color: var(--ink); }
+.tree .c { color: var(--ink-3); }
+
+details { border-bottom: 1px solid var(--rule); padding: 1rem 0; }
+details:first-of-type { border-top: 1px solid var(--rule); }
+details summary { cursor: pointer; font-weight: 500; list-style: none; display: flex; justify-content: space-between; gap: 1rem; }
+details summary::-webkit-details-marker { display: none; }
+details summary::after { content: "+"; color: var(--blue); font: 400 1.2rem/1 var(--sans); transition: transform 200ms var(--ease); }
+details[open] summary::after { transform: rotate(45deg); }
+details p { margin: 0.7rem 0 0; color: var(--ink-2); }
+
+.guide-content .callout { background: var(--callout-yellow); padding: 1.1rem 1.3rem; margin: 1.5rem 0; border-radius: 14px; }
+.guide-content .callout p:last-child { margin: 0; }
+.guide-content figure.half img { max-width: 32rem; }
+
+@media (max-width: 56rem) {
+  .guide-shell { grid-template-columns: 1fr; gap: 0; }
+  .toc { position: static; padding: 0.6rem 0 0.4rem; }
+  .toc p { margin-bottom: 0.55rem; }
+  .toc ol { display: flex; flex-wrap: wrap; gap: 0.25rem 0.5rem; }
+  .toc a { border-left: 0; border-bottom: 2px solid var(--rule); padding: 0.22rem 0.15rem; white-space: nowrap; }
+  .toc a[aria-current="true"] { border-bottom-color: var(--blue); }
+}

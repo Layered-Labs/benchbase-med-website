@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BenchBase documentation</title>
+<meta name="description" content="How to install BenchBase, run a model on medical multiple-choice benchmarks, read the results, compare models, and see how each answer is scored.">
+<meta property="og:title" content="BenchBase documentation">
+<meta property="og:description" content="How to use BenchBase, from your first run to comparing models.">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="guide.css">
+</head>
+<body class="docs-page">
+<a class="skip" href="#guide-content">Skip to content</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="index.html" aria-label="BenchBase home"><span>benchbase</span></a>
+    <nav aria-label="Primary navigation">
+      <a href="index.html">Overview</a>
+      <a href="guide.html" aria-current="page">Documentation</a>
+      <a class="pill dark" href="https://github.com/Layered-Labs/benchbase-med">GitHub <span aria-hidden="true">↗</span></a>
+    </nav>
+  </div>
+</header>
+<div class="guide-intro" id="top">
+  <p class="guide-kicker">BenchBase / Documentation</p>
+  <h1>How to use<br>BenchBase.</h1>
+  <p class="guide-lede">Install it, run a model, read the results, and see exactly how each answer is scored.</p>
+  <p class="guide-intro-note">Python 3.10+ <span aria-hidden="true">/</span> OpenRouter <span aria-hidden="true">/</span> Open source</p>
+</div>
+<div class="guide-shell">
+  <aside class="toc">
+    <nav aria-label="On this page">
+      <p>On this page</p>
+      <ol>
+        <li><a href="#quickstart">Quickstart</a></li>
+        <li><a href="#outputs">What you get</a></li>
+        <li><a href="#compare">Compare models</a></li>
+        <li><a href="#own">Your own system</a></li>
+        <li><a href="#scoring">How scoring works</a></li>
+        <li><a href="#receipts">Saved answers</a></li>
+        <li><a href="#benchmarks">Benchmarks</a></li>
+        <li><a href="#add">Add a benchmark</a></li>
+        <li><a href="#cli">CLI reference</a></li>
+        <li><a href="#limits">Limits</a></li>
+      </ol>
+    </nav>
+  </aside>
+
+  <main class="guide-content" id="guide-content">
+    <section id="quickstart">
+      <h2>Quickstart</h2>
+      <p>You need Python 3.10 or newer and an <a href="https://openrouter.ai">OpenRouter</a> key. Any text model on OpenRouter can be used. If a request fails, the error is saved with that question.</p>
+      <ol class="steps">
+        <li>
+          <h3>Install</h3>
+          <div class="code" data-lang="bash"><pre><code>git clone https://github.com/Layered-Labs/benchbase-med
+cd benchbase-med
+pip install -e .</code></pre></div>
+        </li>
+        <li>
+          <h3>Add your key</h3>
+          <div class="code" data-lang="bash"><pre><code>export OPENROUTER_API_KEY=sk-or-v1-...</code></pre></div>
+          <p class="muted small">Or put the same line in a <code>.env</code> file in the folder you run from, or in <code>~/.config/benchbase/.env</code> to use it from anywhere. BenchBase never writes your key anywhere.</p>
+        </li>
+        <li>
+          <h3>Run a model</h3>
+          <div class="code" data-lang="bash"><pre><code>benchbase run --model deepseek/deepseek-v4-flash --limit 10</code></pre></div>
+          <p>BenchBase streams the questions from Hugging Face. Each answer is saved as soon as it comes back. If you stop the run, run the same command again to continue.</p>
+        </li>
+      </ol>
+      <p class="muted small">Run <code>benchbase doctor</code> any time to see which keys are set and which benchmarks are available.</p>
+    </section>
+
+    <section id="outputs">
+      <h2>What you get</h2>
+      <p>Every run writes plain files: Markdown, PNG images, CSV and JSON. You can open them anywhere, and they display on GitHub.</p>
+<pre class="tree">results/deepseek__deepseek-v4-flash/
+  report.md         <span class="c">the tables and charts on one page</span>
+  figures/          <span class="c">the charts, as 300 dpi PNG images with titles</span>
+  responses.jsonl   <span class="c">every question and answer, one line each</span>
+  results.csv       <span class="c">one row per question</span>
+  metrics.csv       <span class="c">one row per benchmark</span>
+  summary.json      <span class="c">all the numbers in one file</span></pre>
+      <p>This is the table from <code>report.md</code> for a real run with 10 questions per benchmark.</p>
+      <div class="table" role="region" aria-label="Scrollable reference table" tabindex="0">
+        <table>
+          <thead><tr><th>Benchmark</th><th>n</th><th>Accuracy (95% CI)</th><th>Random guess</th></tr></thead>
+          <tbody>
+            <tr><td>MedMCQA</td><td>10</td><td>90.0% (59.6 to 98.2)</td><td>25.0%</td></tr>
+            <tr><td>MedQA</td><td>10</td><td>100.0% (72.2 to 100.0)</td><td>25.0%</td></tr>
+            <tr><td>MMLU Medical</td><td>10</td><td>100.0% (72.2 to 100.0)</td><td>25.0%</td></tr>
+            <tr><td>PubMedQA</td><td>10</td><td>90.0% (59.6 to 98.2)</td><td>33.3%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figure>
+        <img src="assets/accuracy_by_dataset.png" alt="Horizontal bar chart of accuracy by benchmark with 95% confidence intervals and chance level marked" width="1020" loading="lazy">
+        <figcaption>Accuracy by benchmark. The bars show 95% Wilson intervals. The orange tick marks the score from random guessing.</figcaption>
+      </figure>
+      <p>The report also shows balanced accuracy, macro F1, the share of invalid answers, tokens, and cost.</p>
+    </section>
+
+    <section id="compare">
+      <h2>Compare models</h2>
+      <p>List several models separated by commas. BenchBase runs each one, then compares them on the same questions.</p>
+      <div class="code" data-lang="bash"><pre><code>benchbase run --model deepseek/deepseek-v4-flash,meta-llama/llama-3.1-8b-instruct,mistralai/mistral-nemo --limit 10</code></pre></div>
+      <p>Two accuracy numbers side by side are not enough to say one model is better, because both models face the same hard questions. BenchBase compares them only on the questions where they gave different answers. This is McNemar's test, and the result is in <code>results/compare/comparison.md</code>.</p>
+      <div class="table" role="region" aria-label="Scrollable reference table" tabindex="0">
+        <table>
+          <thead><tr><th>Model A</th><th>Model B</th><th>Difference, points (95% CI)</th><th>A only</th><th>B only</th><th>p (Holm)</th></tr></thead>
+          <tbody>
+            <tr><td>deepseek-v4-flash</td><td>llama-3.1-8b-instruct</td><td>+5.0 (-5.0 to +15.0)</td><td>3</td><td>1</td><td>0.625</td></tr>
+            <tr><td>deepseek-v4-flash</td><td>mistral-nemo</td><td>+15.0 (+5.0 to +27.5)</td><td>6</td><td>0</td><td>0.094</td></tr>
+            <tr><td>llama-3.1-8b-instruct</td><td>mistral-nemo</td><td>+10.0 (-2.5 to +22.5)</td><td>5</td><td>1</td><td>0.438</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><b>A only</b> is the number of questions A got right and B got wrong. Only these questions can tell two models apart. The p-values are corrected for comparing every pair of models (Holm). With only 40 questions, no pair is significantly different after correction. That does not mean the models are equal: the sample is too small to tell.</p>
+      <figure class="half">
+        <img src="assets/pairwise.png" alt="Heatmap of pairwise accuracy differences between three models, with significance stars" width="1020" loading="lazy">
+        <figcaption>The accuracy difference for each pair, starred where the corrected p-value is below 0.05.</figcaption>
+      </figure>
+      <p>The report also shows Cohen's kappa (how often two models are right or wrong together, beyond chance), oracle accuracy (the share of questions that at least one model got right), and a breakdown per benchmark. Across these three models, 80.0% of questions were answered correctly by all three, none by all wrong, and 20.0% by some but not all. If you always picked a correct model, you would reach 100.0%. On 92.5% of questions, more than half of the models were right.</p>
+      <div class="callout"><p>Small samples prove little. These numbers use 10 questions per benchmark to keep the demo quick, and a p-value does not tell you how much a difference matters. A full run does not by itself give a result you can publish either. For a result you would cite, decide on held-out data, choose and report the splits, check for contamination, and report the uncertainty.</p></div>
+    </section>
+
+    <section id="own">
+      <h2>Test your own system</h2>
+      <p>BenchBase can score anything that speaks the OpenAI chat completions API: vLLM, Ollama, LM Studio, or a service you wrote, such as an ensemble, a retrieval pipeline or an agent. Set the base URL.</p>
+      <div class="code" data-lang="bash"><pre><code>benchbase run --model my-system --base-url http://localhost:8000/v1</code></pre></div>
+      <p><code>--model</code> is a label. BenchBase sends it as the model name and uses it to name the results folder. If your API needs a key, put it in an environment variable or a <code>.env</code> file and pass <code>--api-key-env MY_SYSTEM_KEY</code>. No OpenRouter key is needed.</p>
+      <p>Your service gets the same prompt as every model. It must reply with only the option key, for example <code>B</code>. Anything else is scored wrong. If your service does not report usage or cost, those fields are left empty.</p>
+      <p>The results go in the results folder next to the models', so you can compare your system with any model:</p>
+      <div class="code" data-lang="bash"><pre><code>benchbase compare results/my-system results/deepseek__deepseek-v4-flash</code></pre></div>
+    </section>
+
+    <section id="scoring">
+      <h2>How scoring works</h2>
+      <p>A benchmark score depends on the prompt and on how the answer is read. Change either one and the accuracy changes. BenchBase fixes both, so scores from different models can be compared.</p>
+      <ul>
+        <li>Every model gets the same zero-shot prompt (no examples). Temperature 0 is requested on every call; a model that does not accept a temperature ignores it and uses its own default. The prompt has a version label, currently <code>mcq-zeroshot-v2</code>, that is saved with every result. A person changes the label when the prompt changes.</li>
+        <li>The model must reply with only the key of the option it chose, for example <code>B</code>. BenchBase trims the reply and checks that it is exactly one of the question's option keys. It does not extract or repair anything: any other reply counts as no answer and is scored wrong. There is no structured-output request, no confidence score and no regex.</li>
+        <li>BenchBase refuses to continue a results file that was written by a different model or prompt version. Because the prompt version is a label changed by hand, a prompt edit made without changing the label is not caught.</li>
+      </ul>
+      <p>BenchBase works out the outcome of each reply from the saved record. <code>results.csv</code> has a <code>status</code> column with these values:</p>
+      <div class="table" role="region" aria-label="Scrollable reference table" tabindex="0">
+        <table>
+          <thead><tr><th>status</th><th class="text">Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><code>ok</code></td><td class="text">A valid answer: the reply was exactly one of the option keys</td></tr>
+            <tr><td><code>invalid</code></td><td class="text">No answer: the reply was something other than an option key. Scored wrong</td></tr>
+            <tr><td><code>truncated</code></td><td class="text">The model ran out of tokens before answering, often after long hidden reasoning. Scored wrong</td></tr>
+            <tr><td><code>request_error</code></td><td class="text">The request failed after retries. Left out of accuracy, and retried when you rerun</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>The metrics</h3>
+      <ul>
+        <li><b>Accuracy</b> with a 95% Wilson interval, and the <b>random-guess score</b>: what you would get by guessing, given each question's number of options.</li>
+        <li><b>Balanced accuracy</b> and <b>macro F1</b> are worked out per correct answer key, so a model that always gives the same answer on a lopsided dataset is not rewarded.</li>
+        <li><b>Macro accuracy</b> is the headline number. Each benchmark counts equally, so the size of MedMCQA does not outweigh PubMedQA.</li>
+      </ul>
+    </section>
+
+    <section id="receipts">
+      <h2>Every answer is saved</h2>
+      <p>Each line of <code>responses.jsonl</code> holds one question: the model, the prompt version, the question and options, the model's exact reply, how it was scored, and the cost when the provider reports it. You can check any single result without reading the rest of the file. A real line, shortened:</p>
+      <div class="code" data-lang="json"><pre><code>{
+  "model": &quot;deepseek/deepseek-v4-flash&quot;,
+  "prompt_version": &quot;mcq-zeroshot-v2&quot;,
+  "dataset_key": &quot;pubmedqa&quot;,
+  "split": &quot;train&quot;,
+  "hash": &quot;2d7b79c2cd1f…&quot;,
+  "question": &quot;Does ethnicity affect where people with canc…&quot;,
+  "options": [{&quot;original_key&quot;: &quot;A&quot;, &quot;text&quot;: &quot;Yes&quot;}, {&quot;original_key&quot;: &quot;B&quot;, &quot;text&quot;: &quot;No&quot;}, {&quot;original_key&quot;: &quot;C&quot;, &quot;text&quot;: &quot;Maybe&quot;}],
+  "gold": &quot;A&quot;,
+  "pred": &quot;A&quot;,
+  "correct": true,
+  "raw_output": &quot;A&quot;,
+  "finish_reason": &quot;stop&quot;,
+  "latency_ms": 3246.7,
+  "prompt_tokens": 593,
+  "completion_tokens": 154,
+  "cost": 0.00014285
+}</code></pre></div>
+      <p>The <code>hash</code> is computed from the question text and the answer text, so it does not change if the options are shuffled or relabeled. It is not unique: different sets of options can produce the same hash. BenchBase also stores an <code>item_id</code> that includes the option text. To join or deduplicate results, use <code>dataset_key</code>, <code>split</code> and <code>item_id</code> together, not <code>hash</code> alone.</p>
+    </section>
+
+    <section id="benchmarks">
+      <h2>Benchmarks</h2>
+      <p>BenchBase scores every labeled split by default (train, validation, dev or test, whichever exist), and each result records its split. The overall score is therefore not a held-out test score. For a held-out result, filter <code>responses.jsonl</code> to the test split and recompute. Datasets are on Hugging Face under <a href="https://huggingface.co/Layered-Labs">Layered-Labs</a>. The item counts are what the current code produces. The MedQA and MedMCQA copies there were uploaded earlier with older code and have not been checked against these counts.</p>
+      <div class="table" role="region" aria-label="Scrollable reference table" tabindex="0">
+        <table>
+          <thead><tr><th>Benchmark</th><th>Items converted</th><th class="text">Splits</th><th class="text">Notes</th></tr></thead>
+          <tbody>
+            <tr><td><a href="https://huggingface.co/datasets/Layered-Labs/benchbase-medqa">MedQA</a></td><td>11,451</td><td class="text">train, test</td><td class="text">USMLE-style, 4 options</td></tr>
+            <tr><td><a href="https://huggingface.co/datasets/Layered-Labs/benchbase-medmcqa">MedMCQA</a></td><td>187,005</td><td class="text">train, validation</td><td class="text">Indian medical entrance exams. The source's test split has no public answers, so it is skipped</td></tr>
+            <tr><td><a href="https://huggingface.co/datasets/Layered-Labs/benchbase-pubmedqa">PubMedQA</a></td><td>1,000</td><td class="text">train</td><td class="text">Yes, No or Maybe, shown as options A, B and C. The abstract is included as context</td></tr>
+            <tr><td><a href="https://huggingface.co/datasets/Layered-Labs/benchbase-mmlu-medical">MMLU Medical</a></td><td>1,242</td><td class="text">test, validation, dev</td><td class="text">Anatomy, clinical knowledge, college medicine, medical genetics, professional medicine and college biology</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Every benchmark is converted into the same format. A row is rejected and logged to <code>rejected.json</code> if it has an empty option, an answer that matches no option, duplicate option keys, or fewer than two options. Rejected rows are never scored.</p>
+      <div class="code" data-lang="python"><pre><code>BenchmarkItem(
+    dataset_key   = "medqa",
+    hash          = "SHA256(question + answer text)",
+    split         = "train",
+    question_type = "mcq",
+    question      = "A 45-year-old man presents with...",
+    context       = None,          # a passage, if the question has one
+    options       = [{"original_key": "A", "text": "..."}, ...],
+    answer        = {"original_key": "D", "text": "Nitrofurantoin"},
+    metadata      = {...},         # source fields that do not fit the schema
+)</code></pre></div>
+    </section>
+
+    <section id="add">
+      <h2>Add a benchmark</h2>
+      <p>A new benchmark takes one converter and one registry entry. The converter maps the source's fields onto the format. BenchBase handles the rest: splits, validation, logging rejected rows, and publishing. Work from a clone (<code>pip install -e .</code>).</p>
+      <div class="code" data-lang="python"><pre><code>class MedQAConverter(BenchBaseConverter):
+
+    def make_question(self, raw):
+        return raw["question"]
+
+    def make_options(self, raw):
+        return [Option(original_key=label, text=text)
+                for label, text in sorted(raw["options"].items())]
+
+    def make_answer(self, raw, options):
+        return Option(original_key=raw["answer_idx"], text=raw["answer"])
+
+    def make_metadata(self, raw):
+        return {"metamap_phrases": list(raw.get("metamap_phrases") or [])}</code></pre></div>
+      <p>Then add it to <code>benchbase/released.yaml</code>:</p>
+      <div class="code" data-lang="yaml"><pre><code>- key: medqa
+  title: MedQA
+  converter: benchbase.converters.medqa.MedQAConverter
+  source: GBaker/MedQA-USMLE-4-options
+  license: cc-by-4.0</code></pre></div>
+      <p><code>benchbase check medqa</code> converts a small live sample of the source and checks it. When you open a pull request, CI runs the same check on every registered converter. When it is merged, every entry that has a license is published to <code>Layered-Labs/benchbase-&lt;key&gt;</code> on Hugging Face, and the repo is created if it does not exist. Entries without a license are never published.</p>
+    </section>
+
+    <section id="cli">
+      <h2>CLI reference</h2>
+      <div class="table" role="region" aria-label="Scrollable reference table" tabindex="0">
+        <table>
+          <thead><tr><th>Command</th><th class="text">What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>benchbase doctor</code></td><td class="text">Shows which keys are set and which benchmarks are on Hugging Face</td></tr>
+            <tr><td><code>benchbase list</code></td><td class="text">Lists the registered benchmarks</td></tr>
+            <tr><td><code>benchbase run --model M</code></td><td class="text">Runs one model, or several separated by commas. Writes the report, and the comparison when there are several</td></tr>
+            <tr><td><code>benchbase report DIR</code></td><td class="text">Rebuilds metrics, figures, and <code>report.md</code> from an existing <code>responses.jsonl</code></td></tr>
+            <tr><td><code>benchbase compare DIR...</code></td><td class="text">Compares run folders: accuracy and the paired McNemar analysis</td></tr>
+            <tr><td><code>benchbase convert KEYS</code></td><td class="text">Converts the source datasets to the BenchBase format in <code>./unified_datasets</code>, with a <code>rejected.json</code> for each</td></tr>
+            <tr><td><code>benchbase check KEYS</code></td><td class="text">Checks converters against a small live sample of the source</td></tr>
+            <tr><td><code>benchbase publish KEYS</code></td><td class="text">Publishes converted datasets to Hugging Face (needs a write token)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>Flags for <code>run</code></h3>
+      <div class="table" role="region" aria-label="Scrollable reference table" tabindex="0">
+        <table>
+          <thead><tr><th>Flag</th><th class="text">Default</th><th class="text">Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><code>--datasets</code></td><td class="text">all</td><td class="text">Comma-separated keys</td></tr>
+            <tr><td><code>--limit</code></td><td class="text">all</td><td class="text">How many questions to run per benchmark, chosen at random using the seed. By default every question in every split is run, not only the test split</td></tr>
+            <tr><td><code>--seed</code></td><td class="text">0</td><td class="text">Seed for the random sample. Runs with the same seed and limit get the same questions</td></tr>
+            <tr><td><code>--workers</code></td><td class="text">8</td><td class="text">Concurrent requests</td></tr>
+            <tr><td><code>--max-tokens</code></td><td class="text">8192</td><td class="text">Most tokens a model may use per answer</td></tr>
+            <tr><td><code>--base-url</code></td><td class="text">OpenRouter</td><td class="text">Score your own OpenAI-compatible API instead of OpenRouter. <code>--model</code> becomes the label</td></tr>
+            <tr><td><code>--api-key-env</code></td><td class="text">none</td><td class="text">Name of the variable holding that API's key, if it needs one</td></tr>
+            <tr><td><code>--no-titles</code></td><td class="text">off</td><td class="text">Charts without titles, for journals that want the caption in the paper (also works on <code>report</code> and <code>compare</code>)</td></tr>
+            <tr><td><code>--fresh</code></td><td class="text">off</td><td class="text">Delete earlier responses instead of continuing them</td></tr>
+            <tr><td><code>--out</code></td><td class="text">results/&lt;model&gt;</td><td class="text">Folder for the results (one model only)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="limits">
+      <h2>Limits</h2>
+      <details>
+        <summary>Is a high score clinical validation?</summary>
+        <p>No. The questions come from exams and research papers. A high score means a model knows the material. It does not show that the model is safe to use with patients.</p>
+      </details>
+      <details>
+        <summary>Can I trust a small run?</summary>
+        <p>Not for conclusions. On 10 questions a 95% interval is very wide, and McNemar's test needs questions where the models disagree. Use small runs to check that your setup works. A full run includes training data, so it is not a held-out score either. To publish a result you need held-out data, a chosen split, contamination checks, and reported uncertainty.</p>
+      </details>
+      <details>
+        <summary>Why are some answers marked truncated?</summary>
+        <p>Some models spend their whole token budget thinking and return nothing. Those answers are scored wrong and counted as invalid. If that share is high, raise <code>--max-tokens</code>.</p>
+      </details>
+      <details>
+        <summary>Which tasks are supported?</summary>
+        <p>Only text multiple choice. Images and free-response questions need an image field and a fixed way to judge answers first.</p>
+      </details>
+    </section>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div>
+    <span>BenchBase is built by <a href="https://github.com/Layered-Labs">Layered Labs</a>.</span>
+    <a href="https://github.com/Layered-Labs/benchbase-med">GitHub</a>
+    <a href="https://huggingface.co/Layered-Labs">Hugging Face</a>
+    <a href="mailto:abdullah.ridwan@layeredlabs.ai">Contact</a>
+    <span>MIT license</span>
+  </div>
+</footer>
+<script src="script.js" defer></script>
+</body>
+</html>

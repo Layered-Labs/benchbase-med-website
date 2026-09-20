@@ -243,7 +243,7 @@ pip install -e .</code></pre></div>
   converter: benchbase.converters.medqa.MedQAConverter
   source: GBaker/MedQA-USMLE-4-options
   license: cc-by-4.0</code></pre></div>
-      <p><code>benchbase check medqa</code> converts a small live sample of the source and checks it. When you open a pull request, CI runs the same check on every registered converter. When it is merged, every entry that has a license is published to <code>Layered-Labs/benchbase-&lt;key&gt;</code> on Hugging Face, and the repo is created if it does not exist. Entries without a license are never published.</p>
+      <p><code>benchbase check medqa</code> converts a small live sample of the source and checks it. When you open a pull request, CI runs the same check on every registered converter. When it is merged, every entry that has a license is published to <code>Layered-Labs/benchbase-&lt;key&gt;</code> on Hugging Face, and the repo is created if it does not exist. Every entry needs a license, and a test fails without one, so a benchmark that cannot be published cannot be merged.</p>
     </section>
 
     <section id="cli">
